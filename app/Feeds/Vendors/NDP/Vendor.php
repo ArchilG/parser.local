@@ -15,7 +15,7 @@ class Vendor extends SitemapHttpProcessor
 
     public function filterProductLinks( Link $link ): bool
     {
-        return str_contains( $link->getUrl(), '/product-page/3-flavor-variety-pack-digestion-skin-coat-hip-joint-bone-broth-bone-broth' );
+        return str_contains( $link->getUrl(), '/product-page/' );
     }
 
     protected function isValidFeedItem( FeedItem $fi ): bool
