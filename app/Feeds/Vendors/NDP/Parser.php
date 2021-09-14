@@ -14,12 +14,33 @@ class Parser extends HtmlParser
 
     public function getProduct(): string
     {
-        return $this->getText('._2qrJF');
+        return $this->getText('[data-hook="product-title"]');
     }
 
     public function getImages(): array
     {
-        return $this->getSrcImages('._2tkQd img');
+        $images =  array_filter($this->getSrcImages( '[data-hook="thumbnail-image"]'));
+
+        if (!$images) {
+            $images = array_filter([$this->getAttr( '.media-wrapper-hook', 'href' )]);
+        }
+        
+        if($images) {
+            foreach ($images as &$image) {
+                $strPos=strpos($image, ".png");
+                if ($strPos) {
+                    $image=substr($image, 0, $strPos + 4);
+                }
+                $strPos=strpos($image, ".jpg");
+                if ($strPos) {
+                    $image=substr($image, 0, $strPos + 4);
+                }
+            }
+
+            return $images;
+        }
+
+        return $this->getSrcImages('[data-hook="product-image-item"]');
     }
 
     public function getDescription(): string
@@ -30,7 +51,7 @@ class Parser extends HtmlParser
 
     public function getMpn(): string
     {
-        $sku = $this->getText( '._1rwRc' );
+        $sku = $this->getText( '[data-hook="sku"]' );
         return StringHelper::removeSpaces(str_replace('SKU: ','',$sku));
     }
 
