@@ -45,8 +45,7 @@ class Parser extends HtmlParser
 
     public function getDescription(): string
     {
-        $description = $this->getHtml( '[data-hook="description"]' );
-        return FeedHelper::cleanProductDescription($description);
+        return $this->getHtml( '[data-hook="description"]' );
     }
 
     public function getMpn(): string
