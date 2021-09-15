@@ -22,22 +22,12 @@ class Parser extends HtmlParser
             $images = array_filter([$this->getAttr('.media-wrapper-hook', 'href')]);
         }
 
-        if ($images) {
-            foreach ($images as &$image) {
-                $strPos = strpos($image, ".png");
-                if ($strPos) {
-                    $image = substr($image, 0, $strPos + 4);
-                }
-                $strPos = strpos($image, ".jpg");
-                if ($strPos) {
-                    $image = substr($image, 0, $strPos + 4);
-                }
-            }
-
-            return $images;
+        foreach ($images as &$image) {
+            preg_match('~(.*?com.*?\.\w+)/~', $image, $matches);
+            $image = $matches[1];
         }
 
-        return $this->getSrcImages('[data-hook="product-image-item"]');
+        return $images ?: $this->getSrcImages('[data-hook="product-image-item"]');
     }
 
     public function getDescription(): string
