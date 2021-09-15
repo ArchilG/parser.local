@@ -2,11 +2,8 @@
 
 namespace App\Feeds\Vendors\NDP;
 
-use App\Feeds\Feed\FeedItem;
 use App\Feeds\Parser\HtmlParser;
-use App\Helpers\FeedHelper;
 use App\Helpers\StringHelper;
-use Symfony\Component\DomCrawler\Crawler;
 
 class Parser extends HtmlParser
 {
@@ -19,21 +16,21 @@ class Parser extends HtmlParser
 
     public function getImages(): array
     {
-        $images =  array_filter($this->getSrcImages( '[data-hook="thumbnail-image"]'));
+        $images = array_filter($this->getSrcImages('[data-hook="thumbnail-image"]'));
 
         if (!$images) {
-            $images = array_filter([$this->getAttr( '.media-wrapper-hook', 'href' )]);
+            $images = array_filter([$this->getAttr('.media-wrapper-hook', 'href')]);
         }
 
-        if($images) {
+        if ($images) {
             foreach ($images as &$image) {
-                $strPos=strpos($image, ".png");
+                $strPos = strpos($image, ".png");
                 if ($strPos) {
-                    $image=substr($image, 0, $strPos + 4);
+                    $image = substr($image, 0, $strPos + 4);
                 }
-                $strPos=strpos($image, ".jpg");
+                $strPos = strpos($image, ".jpg");
                 if ($strPos) {
-                    $image=substr($image, 0, $strPos + 4);
+                    $image = substr($image, 0, $strPos + 4);
                 }
             }
 
@@ -45,13 +42,13 @@ class Parser extends HtmlParser
 
     public function getDescription(): string
     {
-        return $this->getHtml( '[data-hook="description"]' );
+        return $this->getHtml('[data-hook="description"]');
     }
 
     public function getMpn(): string
     {
-        $sku = $this->getText( '[data-hook="sku"]' );
-        return StringHelper::removeSpaces(str_replace('SKU: ','',$sku));
+        $sku = $this->getText('[data-hook="sku"]');
+        return StringHelper::removeSpaces(str_replace('SKU: ', '', $sku));
     }
 
     public function getCostToUs(): float
@@ -61,9 +58,6 @@ class Parser extends HtmlParser
 
     public function getAvail(): ?int
     {
-        if($this->getAttr('[property="og:availability"]','content') === 'InStock') {
-            return self::DEFAULT_AVAIL_NUMBER;
-        }
-        return 0;
+        return $this->getAttr('[property="og:availability"]', 'content') === 'InStock' ? self::DEFAULT_AVAIL_NUMBER : 0;
     }
 }
