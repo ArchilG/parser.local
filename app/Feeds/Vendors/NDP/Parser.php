@@ -24,7 +24,7 @@ class Parser extends HtmlParser
         if (!$images) {
             $images = array_filter([$this->getAttr( '.media-wrapper-hook', 'href' )]);
         }
-        
+
         if($images) {
             foreach ($images as &$image) {
                 $strPos=strpos($image, ".png");
@@ -62,6 +62,9 @@ class Parser extends HtmlParser
 
     public function getAvail(): ?int
     {
-        return self::DEFAULT_AVAIL_NUMBER;
+        if($this->getAttr('[property="og:availability"]','content') == 'InStock') {
+            return self::DEFAULT_AVAIL_NUMBER;
+        }
+        return 0;
     }
 }
