@@ -62,7 +62,7 @@ class Parser extends HtmlParser
 
     public function getAvail(): ?int
     {
-        if($this->getAttr('[property="og:availability"]','content') == 'InStock') {
+        if($this->getAttr('[property="og:availability"]','content') === 'InStock') {
             return self::DEFAULT_AVAIL_NUMBER;
         }
         return 0;
