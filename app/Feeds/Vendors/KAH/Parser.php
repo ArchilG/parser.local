@@ -4,24 +4,54 @@ namespace App\Feeds\Vendors\KAH;
 
 use App\Feeds\Parser\HtmlParser;
 use App\Feeds\Utils\ParserCrawler;
+use App\Helpers\StringHelper;
 use App\Helpers\UrlHelper;
 use phpDocumentor\Reflection\DocBlock\Tags\Link;
 
 class Parser extends HtmlParser
 {
     private const MAIN_DOMAIN = 'https://www.kalmarhome.com';
-    private $descr = '';
+    private string $descr = '';
+    private ?array $attrs = null;
     public function beforeParse(): void
     {
+        if ( $this->exists( '.product-details-area .tab-content' ) ) {
+
+            $description = '';
+            $descriptionFilter = $this->filter( '.product-details-area .tab-content.selected .components .component' );
+            if($descriptionFilter->count()) {
+                if($descriptionFilter->count() == 1) {
+                    $attrs = [];
+                    $descriptionFilter->filter('.dimension')->each( function ( ParserCrawler $item ) use ( &$attrs) {
+                        $attrs[ StringHelper::normalizeSpaceInString( $item->filter( '.dimension-name' )->text() ) ] = StringHelper::normalizeSpaceInString( $item->filter( '.dimension-value' )->text() );
+                    } );
+                    $this->attrs = $attrs;
+                } else {
+                    $description = '<p>Product Dimensions</p>';
+                    $descriptionFilter->each( function ( ParserCrawler $item ) use ( &$description) {
+                        $description .= '<p>' . $item->filter( 'h5' )->text() . '</p><ul>';
+                        $item->filter('.dimension')->each( function ( ParserCrawler $subitem ) use ( &$description) {
+                            $description .= '<li>' . $subitem->filter( '.dimension-name' )->text() . ': ' . $subitem->filter( '.dimension-value' )->text() . '</li>';
+                        } );
+                        $description .= '</ul>';
+                    } );
+
+                    $this->descr .= $description;
+                }
+            }
+
+        }
+
         $src = $this->getAttr('script[src*="/component---src-templates-product-js"]','src');
         if($src) {
             $link = new Link(self::MAIN_DOMAIN . $src);
             $data = $this->getVendor()->getDownloader()->get($link);
             preg_match_all( '/createElement\("li",null,"(.*?)"\)/is', $data->getData(), $matches );
             if(!empty($matches[1])) {
-                $this->descr = "<h3>Care Instructions</h3><ul>" . implode(array_map(function($item) {return "<li>{$item}</li>";},$matches[1])) . '</ul>';
+                $this->descr .= "<h3>Care Instructions</h3><ul>" . implode(array_map(function($item) {return "<li>{$item}</li>";},$matches[1])) . '</ul>';
             }
         }
+
     }
     public function getProduct(): string
     {
@@ -46,12 +76,7 @@ class Parser extends HtmlParser
     }
    public function getDescription(): string
     {
-        $description = '';
-        if ( $this->exists( '.product-details-area .tab-content' ) ) {
-            $descriptionArr = $this->getContent( '.product-details-area .tab-content' );
-            $description = implode("",$descriptionArr);
-        }
-        return $description . $this->descr;
+        return $this->descr;
     }
 
     public function getMpn(): string
@@ -83,5 +108,10 @@ class Parser extends HtmlParser
     {
         $categories = $this->getContent( '.breadcrumb .breadcrumb-item a' );
         return array_filter($categories);
+    }
+
+    public function getAttributes(): ?array
+    {
+        return $this->attrs ?? null;
     }
 }
