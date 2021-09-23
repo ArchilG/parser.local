@@ -4,7 +4,6 @@ namespace App\Feeds\Vendors\KAH;
 
 use App\Feeds\Feed\FeedItem;
 use App\Feeds\Processor\HttpProcessor;
-use App\Feeds\Utils\Link;
 
 class Vendor extends HttpProcessor
 {
@@ -16,10 +15,4 @@ class Vendor extends HttpProcessor
     {
         return count( $fi->getImages() ) && $fi->getCostToUs() > 0 && !empty( $fi->getMpn() );
     }
-
-    public function filterProductLinks( Link $link ): bool
-    {
-        return str_contains( $link->getUrl(), '/dragor-collection/extra-large-salad-bowl-4-individual-bowls-and-servers' );
-    }
-
 }
