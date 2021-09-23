@@ -134,11 +134,11 @@ class FeedValidate
     {
         if ( $group ) {
             if ( $product_name === 'Dummy' ) {
-                $this->attachFailProduct( 'product_name', 'Group product name is "Dummy"' );
+                $this->attachFailProduct( 'product_name', 'Group product name is "Dummy" - ' . $this->current_item->getSupplierInternalId() );
             }
         }
         else if ( $product_name === "" || $product_name === 'Dummy' ) {
-            $this->attachFailProduct( 'product_name', 'Empty product name or product name is "Dummy"' );
+            $this->attachFailProduct( 'product_name', 'Empty product name or product name is "Dummy" - ' . $this->current_item->getSupplierInternalId()  );
         }
         elseif ( $currency = $this->findPriceInString( $product_name ) ) {
             $this->attachFailProduct( 'product_name', 'Product name contains ' . $currency );
@@ -151,7 +151,7 @@ class FeedValidate
     private function validateCostToUs( float $cost, bool $group ): void
     {
         if ( !$group && $cost <= 0 ) {
-            $this->attachFailProduct( 'cost_to_us', 'Cost to us cannot be less than or equal to zero' );
+            $this->attachFailProduct( 'cost_to_us', 'Cost to us cannot be less than or equal to zero - ' . $this->current_item->getSupplierInternalId()  );
         }
     }
 
@@ -214,7 +214,7 @@ class FeedValidate
     private function validateImages( array $images, bool $group ): void
     {
         if ( !$group && !count( $images ) ) {
-            $this->attachFailProduct( 'images', 'The product has no images' );
+            $this->attachFailProduct( 'images', 'The product has no images - ' .  $this->current_item->getSupplierInternalId() );
             return;
         }
 
@@ -259,7 +259,7 @@ class FeedValidate
     private function validateMpn( string $mpn, bool $group ): void
     {
         if ( !$group && empty( $mpn ) ) {
-            $this->attachFailProduct( 'mpn', 'Mpn must not be empty' );
+            $this->attachFailProduct( 'mpn', 'Mpn must not be empty - ' . $this->current_item->getSupplierInternalId()  );
         }
     }
 
