@@ -15,7 +15,7 @@ class Vendor extends SitemapHttpProcessor
 
     protected function isValidFeedItem( FeedItem $fi ): bool
     {
-        return count( $fi->getImages() ) && $fi->getCostToUs() > 0;
+        return $fi->getCostToUs() > 0;
     }
 
 }
