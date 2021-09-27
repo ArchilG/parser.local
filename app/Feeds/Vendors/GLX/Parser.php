@@ -27,11 +27,11 @@ class Parser extends HtmlParser
     {
         $offerText = $this->getText('[itemprop="offers"]');
         $matches = [];
-        preg_match( '/Width:.+?\((.*?)mm\)/is', $offerText, $matches );
+        preg_match( '/Width:.+?(.*?)in/is', $offerText, $matches );
         if (!empty($matches[1])) $this->dims['x'] = trim($matches[1]);
 
         $matches = [];
-        preg_match( '/Height:.+?\((.*?)mm\)/is', $offerText, $matches );
+        preg_match( '/Height:.+?(.*?)in/is', $offerText, $matches );
         if (!empty($matches[1])) $this->dims['y'] = trim($matches[1]);
 
         $matches = [];
