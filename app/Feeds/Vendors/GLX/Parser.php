@@ -72,8 +72,7 @@ class Parser extends HtmlParser
 
     public function getImages(): array
     {
-        if (!empty($this->images)) return $this->images;
-        return array_values(array_unique($this->getLinks('#altviews a')));
+        return $this->images ?: array_values(array_unique($this->getLinks('#altviews a')));
     }
 
     public function getDescription(): string
@@ -103,7 +102,8 @@ class Parser extends HtmlParser
 
     public function getAvail(): ?int
     {
-        return $this->getAttr('[itemprop="availability"]', 'content') === 'InStock' ? self::DEFAULT_AVAIL_NUMBER : 0;
+        //return $this->getAttr('[itemprop="availability"]', 'content') === 'InStock' ? self::DEFAULT_AVAIL_NUMBER : 0;
+        return self::DEFAULT_AVAIL_NUMBER;
     }
     public function getCategories(): array
     {
@@ -123,43 +123,20 @@ class Parser extends HtmlParser
 
     public function getOptions(): array
     {
-        $colors = $this->getContent( '#options_table select[title="Gold Color"] option' );
-        $rope_chains = $this->getContent( '#options_table select[title="Rope Chain Option"] option' );
-        $box_chains = $this->getContent( '#options_table select[title="Box Chain Option"] option' );
-        $manufacurers_appraisals = $this->getContent( '#options_table select[title="Manufacturer\'s Appraisal"] option' );
-        $jewelry_tags = $this->getContent( '#options_table select[title="Jewelry Tag"] option' );
 
         $options = [];
-        foreach ( $colors as $val ) {
-            preg_match( "/\[(.*?)\]/", $val, $matches );
-            if(empty($matches[1])) {
-                $options['colors'][] = $val;
-            }
-        }
-        foreach ( $rope_chains as $val ) {
-            preg_match( "/\[(.*?)\]/", $val, $matches );
-            if(empty($matches[1])) {
-                $options['rope_chains'][] = $val;
-            }
-        }
-        foreach ( $box_chains as $val ) {
-            preg_match( "/\[(.*?)\]/", $val, $matches );
-            if(empty($matches[1])) {
-                $options['box_chains'][] = $val;
-            }
-        }
-        foreach ( $manufacurers_appraisals as $val ) {
-            preg_match( "/\[(.*?)\]/", $val, $matches );
-            if(empty($matches[1])) {
-                $options['manufacurers_appraisals'][] = $val;
-            }
-        }
-        foreach ( $jewelry_tags as $val ) {
-            preg_match( "/\[(.*?)\]/", $val, $matches );
-            if(empty($matches[1])) {
-                $options['jewelry_tags'][] = $val;
-            }
-        }
+        $this->filter( '#options_table select' )->each( function ( ParserCrawler $select ) use ( &$options ) {
+
+            $option_code = strtolower(str_replace([' ',"'"],['_',''],$select->attr('title')));
+            $select->filter( 'option' )->each( function ( ParserCrawler $option ) use ( &$options, $option_code ) {
+                $val = $option->text();
+                preg_match( "/\[(.*?)\]/", $val, $matches );
+                if(empty($matches[1])) {
+                    $options[$option_code][] = $val;
+                }
+            });
+        });
+
         return $options;
     }
 
