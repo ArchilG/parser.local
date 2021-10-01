@@ -66,12 +66,13 @@ class Parser extends HtmlParser
 
     public function getImages(): array
     {
-        return $this->images ?: array_values( array_unique( $this->getLinks( '#altviews a' ) ) );
+        $this->images = $this->images ?: array_values( array_unique( $this->getLinks( '#altviews a' ) ) );
+        return $this->images ?: $this->getSrcImages('#vZoomMagnifierImage');;
     }
 
     public function getDescription(): string
     {
-        return $this->getHtml( '#product_description' );
+        return $this->getHtml( '#product_description' ) ?: $this->getText( 'span[itemprop="name"]' );
     }
 
     public function getShortDescription(): array
@@ -149,7 +150,7 @@ class Parser extends HtmlParser
     public function getAttributes(): ?array
     {
         $this->attributes[ 'avail' ] = $this->getAttr( '[itemprop="availability"]', 'content' );
-        return $this->attributes ?: null;
+        return array_filter($this->attributes) ?: null;
     }
 
 }
