@@ -72,7 +72,7 @@ class Parser extends HtmlParser
 
     public function getDescription(): string
     {
-        return $this->getHtml( '#product_description' ) ?: $this->getText( 'span[itemprop="name"]' );
+        return str_replace('SKU: ' . $this->getMpn(), '', $this->getHtml( '#product_description' )) ?: $this->getText( 'span[itemprop="name"]' );
     }
 
     public function getShortDescription(): array
@@ -129,7 +129,7 @@ class Parser extends HtmlParser
         $options = [];
         $this->filter( '#options_table select' )->each( function ( ParserCrawler $select ) use ( &$options ) {
 
-            $option_code = str_replace( [ ' ', "'" ], [ '_', '' ], $select->attr( 'title' ) );
+            $option_code = str_replace( "'", '', $select->attr( 'title' ) );
             $select->filter( 'option' )->each( function ( ParserCrawler $option ) use ( &$options, $option_code ) {
                 $val = $option->text();
                 preg_match( "/\[(.*?)]/", $val, $matches );
