@@ -76,7 +76,7 @@ class Parser extends HtmlParser
             $description = '';
             $this->filter( '#product_description div' )->each( function ( ParserCrawler $item ) use (&$description) {
                 if(!str_contains($item->text(),'Please feel free to contact us')) {
-                    $description .= $item->text();
+                    $description .= ' ' . $item->text();
                 }
             });
             return $description;
