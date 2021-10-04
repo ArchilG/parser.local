@@ -67,11 +67,20 @@ class Parser extends HtmlParser
     public function getImages(): array
     {
         $this->images = $this->images ?: array_values( array_unique( $this->getLinks( '#altviews a' ) ) );
-        return $this->images ?: $this->getSrcImages('#vZoomMagnifierImage');;
+        return $this->images ?: $this->getSrcImages('#vZoomMagnifierImage');
     }
 
     public function getDescription(): string
     {
+        if($this->exist( '#product_description div' )) {
+            $description = '';
+            $this->filter( '#product_description div' )->each( function ( ParserCrawler $item ) use (&$description) {
+                if(!str_contains($item->text(),'Please feel free to contact us')) {
+                    $description .= $item->text();
+                }
+            });
+            return $description;
+        }
         return str_replace('SKU: ' . $this->getMpn(), '', $this->getHtml( '#product_description' )) ?: $this->getText( 'span[itemprop="name"]' );
     }
 
