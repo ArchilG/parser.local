@@ -2,6 +2,7 @@
 
 namespace App\Feeds\Vendors\GLX;
 
+use App\Feeds\Feed\FeedItem;
 use App\Feeds\Parser\HtmlParser;
 use App\Feeds\Utils\ParserCrawler;
 use App\Helpers\FeedHelper;
@@ -20,9 +21,9 @@ class Parser extends HtmlParser
     private array $short_description = [];
     private array $attributes = [];
 
-
     public function beforeParse(): void
     {
+
         $offer_text = $this->getText( '[itemprop="offers"]' );
 
         if ( preg_match( '/Width:.+?(.*?)in/is', $offer_text, $matches ) ) {
@@ -72,11 +73,11 @@ class Parser extends HtmlParser
 
     public function getDescription(): string
     {
-        if($this->exist( '#product_description div' )) {
+        if($this->exists( '#product_description div' )) {
             $description = '';
             $this->filter( '#product_description div' )->each( function ( ParserCrawler $item ) use (&$description) {
                 if(!str_contains($item->text(),'Please feel free to contact us')) {
-                    $description .= ' ' . $item->text();
+                    $description .= ' ' . $item->outerHtml();
                 }
             });
             return $description;
@@ -160,6 +161,13 @@ class Parser extends HtmlParser
     {
         $this->attributes[ 'avail' ] = $this->getAttr( '[itemprop="availability"]', 'content' );
         return array_filter($this->attributes) ?: null;
+    }
+
+    public function afterParse(FeedItem $fi): void
+    {
+        if ($this->exists('[name*="TEXTBOX"]')) {
+            $fi->setCostToUs(0);
+        }
     }
 
 }
