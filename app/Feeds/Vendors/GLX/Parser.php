@@ -147,7 +147,7 @@ class Parser extends HtmlParser
                     $options[ $option_code ][] = $val;
                 }
             } );
-            if(empty($options[ $option_code ])) {
+            if (empty($options[$option_code])) {
                 $this->continue = true;
             }
         } );
