@@ -20,6 +20,7 @@ class Parser extends HtmlParser
     private ?float $weight = null;
     private array $short_description = [];
     private array $attributes = [];
+    private bool $continue = false;
 
     public function beforeParse(): void
     {
@@ -138,7 +139,6 @@ class Parser extends HtmlParser
 
         $options = [];
         $this->filter( '#options_table select' )->each( function ( ParserCrawler $select ) use ( &$options ) {
-
             $option_code = str_replace( "'", '', $select->attr( 'title' ) );
             $select->filter( 'option' )->each( function ( ParserCrawler $option ) use ( &$options, $option_code ) {
                 $val = $option->text();
@@ -147,6 +147,9 @@ class Parser extends HtmlParser
                     $options[ $option_code ][] = $val;
                 }
             } );
+            if(empty($options[ $option_code ])) {
+                $this->continue = true;
+            }
         } );
 
         return $options;
@@ -165,7 +168,7 @@ class Parser extends HtmlParser
 
     public function afterParse(FeedItem $fi): void
     {
-        if ($this->exists('[name*="TEXTBOX"]')) {
+        if ($this->exists('[name*="TEXTBOX"]') || $this->continue) {
             $fi->setCostToUs(0);
         }
     }

@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Feeds\Vendors\GLX;
-
+use App\Feeds\Utils\Link;
 use App\Feeds\Feed\FeedItem;
 use App\Feeds\Processor\SitemapHttpProcessor;
 
@@ -14,7 +14,7 @@ class Vendor extends SitemapHttpProcessor
 
 //    public function filterProductLinks( Link $link ): bool
 //    {
-//        return str_contains( $link->getUrl(), '/Gold-Necklace-Bar-Purple-Amethysts-p/5750y.htm' );
+//        return str_contains( $link->getUrl(), '/product-p/4188-r.htm' );
 //    }
 
     protected function isValidFeedItem( FeedItem $fi ): bool
