@@ -81,9 +81,9 @@ class Parser extends HtmlParser
                     $description .= ' ' . $item->outerHtml();
                 }
             });
-            return $description;
+            return StringHelper::normalizeSpaceInString($description);
         }
-        return str_replace('SKU: ' . $this->getMpn(), '', $this->getHtml( '#product_description' )) ?: $this->getText( 'span[itemprop="name"]' );
+        return StringHelper::normalizeSpaceInString(str_replace('SKU: ' . $this->getMpn(), '', $this->getHtml( '#product_description' ))) ?: $this->getText( 'span[itemprop="name"]' );
     }
 
     public function getShortDescription(): array
