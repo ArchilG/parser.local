@@ -81,10 +81,12 @@ class Parser extends HtmlParser
                     $description .= ' ' . $item->outerHtml();
                 }
             });
-            return StringHelper::normalizeSpaceInString($description);
+            if (StringHelper::isNotEmpty(strip_tags($description))) {
+                return StringHelper::normalizeSpaceInString($description);
+            }
         }
         $description = str_replace('SKU: ' . $this->getMpn(), '', $this->getHtml( '#product_description' ));
-        return StringHelper::normalizeSpaceInString(StringHelper::isNotEmpty($description) ? $description : $this->getText( 'span[itemprop="name"]' ));
+        return StringHelper::normalizeSpaceInString(StringHelper::isNotEmpty(strip_tags($description)) ? $description : $this->getText( 'span[itemprop="name"]' ));
     }
 
     public function getShortDescription(): array

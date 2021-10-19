@@ -8,10 +8,10 @@ use App\Feeds\Processor\SitemapHttpProcessor;
 class Vendor extends SitemapHttpProcessor
 {
     public array $first = [ 'https://www.galaxygold.com/sitemap.xml' ];
-
+//
 //    public function filterProductLinks( Link $link ): bool
 //    {
-//        return str_contains( $link->getUrl(), '/product-p/4188-r.htm' );
+//        return str_contains( $link->getUrl(), '/Gold-Chandelier-Diamond-Earrings-p/1528-w.htm' );
 //    }
 
     protected function isValidFeedItem( FeedItem $fi ): bool
